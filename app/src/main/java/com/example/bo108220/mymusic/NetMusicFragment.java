@@ -8,19 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * 创建时间：2017/11/10 14:36
+ * 创建时间：2017/11/10 16:36
  * 作者：Li zhb
- * 功能描述：本地音乐的fragment
+ * 功能描述：
  */
-public class MyMusicFragment extends Fragment {
+public class NetMusicFragment extends Fragment{
 
     private View view;
-
-    public static MyMusicFragment newInstance() {
+    public static NetMusicFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        MyMusicFragment fragment = new MyMusicFragment();
+        NetMusicFragment fragment = new NetMusicFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -28,11 +27,8 @@ public class MyMusicFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.my_music_fragment, container, false);
+        view = inflater.inflate(R.layout.net_music_fragment,container,false);
+
         return view;
-    }
-
-    private void findView(){
-
     }
 }
