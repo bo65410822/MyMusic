@@ -1,11 +1,13 @@
 package com.example.bo108220.mymusic.bean;
 
+import java.io.Serializable;
+
 /**
  * 创建时间：2017/11/10 17:53
  * 作者：Li zhb
  * 功能描述：Mp3Info实体类
  */
-public class Mp3Info {
+public class Mp3Info implements Serializable {
 
     private long id;
     private String title;

@@ -16,19 +16,24 @@
 
 package com.example.bo108220.mymusic;
 
+import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 
+
 import com.example.bo108220.mymusic.utils.PagerSlidingTabStrip;
 
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends BaseActivity {
 
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
@@ -56,6 +61,7 @@ public class MainActivity extends FragmentActivity {
 
         changeColor(currentColor);
     }
+
 
 
     private void changeColor(int newColor) {
@@ -100,12 +106,18 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            if (position==0){
+            if (position == 0) {
                 return MyMusicFragment.newInstance();
-            }else if (position==1){
+            } else if (position == 1) {
                 return NetMusicFragment.newInstance();
             }
             return null;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindPlayService();
     }
 }
