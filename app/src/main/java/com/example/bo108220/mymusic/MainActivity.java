@@ -16,30 +16,33 @@
 
 package com.example.bo108220.mymusic;
 
-import android.annotation.SuppressLint;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
+
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 
+import com.example.bo108220.mymusic.adapter.MyPagerAdapter;
 import com.example.bo108220.mymusic.utils.PagerSlidingTabStrip;
 
 
-public class MainActivity extends BaseActivity {
+/**
+ * 主界面的activity
+ */
+public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
     private MyPagerAdapter adapter;
-
-    private Drawable oldBackground = null;
+    private ImageView musicNext, musicIcon;
+    private TextView musicTime, musicTitle, musicName;
+    private SeekBar musicBar;
     private int currentColor = 0xFF3F9FE0;
 
     @Override
@@ -47,21 +50,23 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        musicNext = findViewById(R.id.music_next);
+        musicNext.setOnClickListener(this);
+        musicTime = findViewById(R.id.music_time);
+        musicTitle = findViewById(R.id.music_title);
+        musicName = findViewById(R.id.music_name);
+        musicIcon = findViewById(R.id.music_icon);
+        musicBar = findViewById(R.id.music_seek_bar);
         tabs = findViewById(R.id.tabs);
         pager = findViewById(R.id.pager);
         adapter = new MyPagerAdapter(getSupportFragmentManager());
-
         pager.setAdapter(adapter);
-
         final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
                 .getDisplayMetrics());
         pager.setPageMargin(pageMargin);
-
         tabs.setViewPager(pager);
-
         changeColor(currentColor);
     }
-
 
 
     private void changeColor(int newColor) {
@@ -73,46 +78,8 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("currentColor", currentColor);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        currentColor = savedInstanceState.getInt("currentColor");
-        changeColor(currentColor);
-    }
-
-
-    public class MyPagerAdapter extends FragmentPagerAdapter {
-
-        private final String[] TITLES = {"本地音乐", "在线音乐"};
-
-        public MyPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return TITLES[position];
-        }
-
-        @Override
-        public int getCount() {
-            return TITLES.length;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            if (position == 0) {
-                return MyMusicFragment.newInstance();
-            } else if (position == 1) {
-                return NetMusicFragment.newInstance();
-            }
-            return null;
-        }
+    public void onClick(View view) {
+        super.playService.next();
     }
 
     @Override

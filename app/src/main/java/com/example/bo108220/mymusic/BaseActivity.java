@@ -10,7 +10,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
-import com.example.bo108220.mymusic.constants.Constants;
 import com.example.bo108220.mymusic.service.PlayService;
 
 /**

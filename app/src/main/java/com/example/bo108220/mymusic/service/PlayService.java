@@ -57,6 +57,8 @@ public class PlayService extends Service {
 
     /**
      * 开始播放
+     *
+     * @param position
      */
     public void start(int position) {
 
@@ -72,4 +74,36 @@ public class PlayService extends Service {
         currentPosition = position;
     }
 
+    /**
+     * 暂停播放
+     */
+    public void pause() {
+        if (mp.isPlaying()) {
+            mp.pause();
+        }
+    }
+
+    /**
+     * 下一曲
+     */
+    public void next() {
+        if (currentPosition + 1 >= mp3Infos.size()) {
+            currentPosition = 0;
+        } else {
+            currentPosition++;
+        }
+        start(currentPosition);
+    }
+
+    /**
+     * 上一曲
+     */
+    public void prev() {
+        if (currentPosition - 1 <= 0) {
+            currentPosition = mp3Infos.size() - 1;
+        } else {
+            currentPosition--;
+        }
+        start(currentPosition);
+    }
 }

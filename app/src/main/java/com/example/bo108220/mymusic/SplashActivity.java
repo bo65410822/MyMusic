@@ -6,19 +6,23 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.bo108220.mymusic.service.PlayService;
 
 public class SplashActivity extends Activity {
 
+    private static final String TAG = "SplashActivity";
     private static final int START_ACTIVITY = 0x1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        startService(new Intent(this, PlayService.class));
-        handler.sendEmptyMessageDelayed(START_ACTIVITY, 3000);
+//        startService(new Intent(this, PlayService.class));
+//        handler.sendEmptyMessageDelayed(START_ACTIVITY, 3000);
+        startActivity(new Intent(SplashActivity.this
+                , MainActivity.class));
     }
 
     @SuppressLint("HandlerLeak")
@@ -28,6 +32,7 @@ public class SplashActivity extends Activity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case START_ACTIVITY:
+                    Log.e(TAG, "handleMessage: "+ SplashActivity.TAG );
                     startActivity(new Intent(SplashActivity.this
                             , MainActivity.class));
                     finish();
