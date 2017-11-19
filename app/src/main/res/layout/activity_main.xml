@@ -69,10 +69,15 @@
                 android:text="时长：" />
 
             <SeekBar
+                android:layout_marginStart="-20dp"
+                android:layout_marginEnd="-20dp"
                 android:id="@+id/music_seek_bar"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:maxHeight="1dp"
+                android:progressDrawable="@drawable/play_seekbar_bg"
+                android:thumb="@drawable/slider_thumb_normal" />
         </LinearLayout>
 
         <ImageView

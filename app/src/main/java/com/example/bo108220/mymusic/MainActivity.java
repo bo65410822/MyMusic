@@ -17,9 +17,11 @@
 package com.example.bo108220.mymusic;
 
 
-import android.graphics.drawable.Drawable;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 import android.view.View;
@@ -29,6 +31,7 @@ import android.widget.TextView;
 
 
 import com.example.bo108220.mymusic.adapter.MyPagerAdapter;
+import com.example.bo108220.mymusic.utils.MusicUtil;
 import com.example.bo108220.mymusic.utils.PagerSlidingTabStrip;
 
 
@@ -37,6 +40,9 @@ import com.example.bo108220.mymusic.utils.PagerSlidingTabStrip;
  */
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
+    private static final String TAG = "MainActivity";
+    private static final int NEXT_MUSIC = 0x101;
+    private static final int PLAY_TIME_MUSIC = 0x102;
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
     private MyPagerAdapter adapter;
@@ -44,12 +50,37 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView musicTime, musicTitle, musicName;
     private SeekBar musicBar;
     private int currentColor = 0xFF3F9FE0;
+    private int i = 0;
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case NEXT_MUSIC:
+                    setCurrentMp3Info();
+                    break;
+                case PLAY_TIME_MUSIC:
+                    if (playService != null) {
+                        if (playService.isPlay()) {
+
+
+                            musicTime.setText(getPlayTime(mp3Info.getDuration()));
+                        }
+                    }
+                    sendEmptyMessageDelayed(PLAY_TIME_MUSIC, 1000);
+                    break;
+
+            }
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         musicNext = findViewById(R.id.music_next);
         musicNext.setOnClickListener(this);
         musicTime = findViewById(R.id.music_time);
@@ -66,8 +97,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         pager.setPageMargin(pageMargin);
         tabs.setViewPager(pager);
         changeColor(currentColor);
-    }
+        setCurrentMp3Info();
+        handler.sendEmptyMessage(PLAY_TIME_MUSIC);
 
+    }
 
     private void changeColor(int newColor) {
 
@@ -79,12 +112,43 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        //下一曲并更新底部UI
         super.playService.next();
+        handler.sendEmptyMessage(NEXT_MUSIC);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unbindPlayService();
+    }
+
+    /**
+     * 设置当前音乐信息,默认显示第一首音乐
+     */
+    public void setCurrentMp3Info() {
+        if (mp3Info == null) {
+            if (MusicUtil.getMp3Infos(MainActivity.this) != null) {
+                mp3Info = MusicUtil.getMp3Infos(MainActivity.this).get(0);
+            }
+        }
+        musicTitle.setTag(mp3Info.getTitle());
+        musicName.setText(mp3Info.getArtist());
+        musicTime.setText(MusicUtil.formatTime(mp3Info.getDuration()));
+
+    }
+
+    /**
+     * 获取播放进度时间
+     * @param time 音乐时长
+     * @return
+     */
+    private String getPlayTime(long time) {
+
+        if (time >= 0) {
+            i++;
+            time -= 1000 * i;
+        }
+        return MusicUtil.formatTime(time);
     }
 }

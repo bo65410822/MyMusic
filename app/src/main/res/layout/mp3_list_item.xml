@@ -34,10 +34,9 @@
     </LinearLayout>
 
     <TextView
-        android:layout_marginLeft="5dp"
+        android:layout_marginRight="10dp"
         android:id="@+id/music_item_time"
         android:layout_marginTop="3dp"
-        android:layout_weight="1"
         android:text="时长"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
+import com.example.bo108220.mymusic.bean.Mp3Info;
 import com.example.bo108220.mymusic.service.PlayService;
 
 /**
@@ -18,7 +20,11 @@ import com.example.bo108220.mymusic.service.PlayService;
  * 功能描述：Activity的基类
  */
 
-public abstract class BaseActivity extends FragmentActivity{
+@SuppressLint("Registered")
+public class BaseActivity extends FragmentActivity {
+    private static final String TAG = "BaseActivity";
+    protected Mp3Info mp3Info;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +38,7 @@ public abstract class BaseActivity extends FragmentActivity{
             isBound = true;
             PlayService.BindPlay bindPlay = (PlayService.BindPlay) iBinder;
             playService = bindPlay.getPlayService();
+            playService.setCallBackMusic(callbackMusic);
         }
 
         @Override
@@ -40,18 +47,24 @@ public abstract class BaseActivity extends FragmentActivity{
             isBound = false;
         }
     };
-
+    PlayService.CallbackMusic callbackMusic = new PlayService.CallbackMusic() {
+        @Override
+        public void onCurrentMusic(Mp3Info mp3Info) {
+            BaseActivity.this.mp3Info = mp3Info;
+            Log.e(TAG, "onCurrentMusic: " + mp3Info.toString());
+        }
+    };
 
     /**
      * 绑定服务
      */
     @SuppressLint("WrongConstant")
     public void bindPlayService() {
-        if (!isBound){
+        if (!isBound) {
             Intent intent = new Intent();
-            intent.setClass(this,PlayService.class);
+            intent.setClass(this, PlayService.class);
             bindService(intent, conn, Service.BIND_AUTO_CREATE);
-            isBound  = true;
+            isBound = true;
         }
     }
 
@@ -64,6 +77,7 @@ public abstract class BaseActivity extends FragmentActivity{
             isBound = false;
         }
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

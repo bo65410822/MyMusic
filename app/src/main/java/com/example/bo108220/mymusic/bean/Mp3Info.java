@@ -63,4 +63,16 @@ public class Mp3Info implements Serializable {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    @Override
+    public String toString() {
+        return "Mp3Info{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", artist='" + artist + '\'' +
+                ", duration=" + duration +
+                ", size=" + size +
+                ", url='" + url + '\'' +
+                '}';
+    }
 }

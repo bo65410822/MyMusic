@@ -30,6 +30,8 @@ public class MyMusicFragment extends Fragment implements AdapterView.OnItemClick
     private MainActivity mainActivity;
     private ListView myMusicView;
     private MyMusicAdapter myMusicAdapter;
+    private Mp3Info currentMp3Info;
+
 
     public static MyMusicFragment newInstance() {
 
@@ -66,6 +68,8 @@ public class MyMusicFragment extends Fragment implements AdapterView.OnItemClick
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Log.e(TAG, "onItemClick: " + i );
         mainActivity.playService.start(i);
+        currentMp3Info = mp3Infos.get(i);
+        mainActivity.setCurrentMp3Info();
     }
 
     @Override
@@ -73,4 +77,5 @@ public class MyMusicFragment extends Fragment implements AdapterView.OnItemClick
         super.onDestroy();
         mainActivity.unbindPlayService();
     }
+
 }

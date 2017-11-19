@@ -19,10 +19,8 @@ public class SplashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-//        startService(new Intent(this, PlayService.class));
-//        handler.sendEmptyMessageDelayed(START_ACTIVITY, 3000);
-        startActivity(new Intent(SplashActivity.this
-                , MainActivity.class));
+        startService(new Intent(this, PlayService.class));
+        handler.sendEmptyMessageDelayed(START_ACTIVITY, 3000);
     }
 
     @SuppressLint("HandlerLeak")

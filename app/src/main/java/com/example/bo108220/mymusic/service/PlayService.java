@@ -19,6 +19,12 @@ public class PlayService extends Service {
     private MediaPlayer mp;
     private BindPlay bindPlay = new BindPlay();
     private int currentPosition;
+    private Mp3Info mp3Info;//正在播放的音乐信息
+    private CallbackMusic callBackMusic;
+    private boolean isPlay;
+    public void setCallBackMusic(CallbackMusic callBackMusic) {
+        this.callBackMusic = callBackMusic;
+    }
 
     public PlayService() {
 
@@ -61,10 +67,10 @@ public class PlayService extends Service {
      * @param position
      */
     public void start(int position) {
-
+        mp3Info = mp3Infos.get(position);
         try {
             mp.reset(); //重置多媒体
-            String url = mp3Infos.get(position).getUrl();
+            String url = mp3Info.getUrl();
             mp.setDataSource(url);
             mp.prepare();
             mp.start();
@@ -72,6 +78,8 @@ public class PlayService extends Service {
             e.printStackTrace();
         }
         currentPosition = position;
+        callBackMusic.onCurrentMusic(mp3Info);
+        isPlay = true;
     }
 
     /**
@@ -81,6 +89,7 @@ public class PlayService extends Service {
         if (mp.isPlaying()) {
             mp.pause();
         }
+        isPlay = false;
     }
 
     /**
@@ -105,5 +114,24 @@ public class PlayService extends Service {
             currentPosition--;
         }
         start(currentPosition);
+    }
+
+    /**
+     * 返回是否播放
+     * @return
+     */
+    public boolean isPlay(){
+        return isPlay;
+    }
+
+    /**
+     * 回调音乐接口
+     */
+    public interface CallbackMusic{
+        /**
+         * 当前Music
+         * @param mp3Info
+         */
+        public void onCurrentMusic(Mp3Info mp3Info);
     }
 }
