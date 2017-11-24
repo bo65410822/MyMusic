@@ -16,7 +16,7 @@ import java.util.List;
 public class PlayService extends Service {
 
     private List<Mp3Info> mp3Infos;
-    private MediaPlayer mp;
+    public MediaPlayer mp;
     private BindPlay bindPlay = new BindPlay();
     private int currentPosition;
     private Mp3Info mp3Info;//正在播放的音乐信息
@@ -47,6 +47,7 @@ public class PlayService extends Service {
     public void onCreate() {
         super.onCreate();
         mp = new MediaPlayer();
+        mp.setOnCompletionListener(new CompletionListener());
         mp3Infos = MusicUtil.getMp3Infos(this);
     }
 
@@ -133,5 +134,17 @@ public class PlayService extends Service {
          * @param mp3Info
          */
         public void onCurrentMusic(Mp3Info mp3Info);
+    }
+
+    /**
+     * 自动播放下一曲
+     */
+    private final class CompletionListener implements MediaPlayer.OnCompletionListener {
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+           next();
+        }
+
     }
 }

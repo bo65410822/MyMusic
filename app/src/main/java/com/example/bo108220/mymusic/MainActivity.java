@@ -23,16 +23,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.bo108220.mymusic.adapter.MyPagerAdapter;
+import com.example.bo108220.mymusic.bean.Mp3Info;
 import com.example.bo108220.mymusic.utils.MusicUtil;
 import com.example.bo108220.mymusic.utils.PagerSlidingTabStrip;
+
+import java.util.List;
 
 
 /**
@@ -43,6 +48,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private static final int NEXT_MUSIC = 0x101;
     private static final int PLAY_TIME_MUSIC = 0x102;
+    private static final int NONE_MUSIC = 0x103;
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
     private MyPagerAdapter adapter;
@@ -54,6 +60,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
+        @SuppressLint("ShowToast")
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -64,16 +71,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 case PLAY_TIME_MUSIC:
                     if (playService != null) {
                         if (playService.isPlay()) {
-
-
+                            i++;
                             musicTime.setText(getPlayTime(mp3Info.getDuration()));
                         }
                     }
                     sendEmptyMessageDelayed(PLAY_TIME_MUSIC, 1000);
                     break;
-
+                case NONE_MUSIC: //手机中没有音乐
+                    Toast.makeText(MainActivity.this, "您还没有歌曲"
+                            , Toast.LENGTH_LONG).show();
+                    break;
             }
-
         }
     };
 
@@ -88,6 +96,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         musicName = findViewById(R.id.music_name);
         musicIcon = findViewById(R.id.music_icon);
         musicBar = findViewById(R.id.music_seek_bar);
+        musicBar.setOnSeekBarChangeListener(new MySeekBarListener());
         tabs = findViewById(R.id.tabs);
         pager = findViewById(R.id.pager);
         adapter = new MyPagerAdapter(getSupportFragmentManager());
@@ -99,15 +108,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         changeColor(currentColor);
         setCurrentMp3Info();
         handler.sendEmptyMessage(PLAY_TIME_MUSIC);
+        setSeekBar();
+    }
 
+    /**
+     * 设置的进度条
+     */
+    private void setSeekBar(){
+        if (playService!=null) {
+            if (playService.mp != null) {
+                musicBar.setMax(playService.mp.getDuration());
+            }
+        }
     }
 
     private void changeColor(int newColor) {
-
         tabs.setIndicatorColor(newColor);
-
         currentColor = newColor;
-
     }
 
     @Override
@@ -127,9 +144,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * 设置当前音乐信息,默认显示第一首音乐
      */
     public void setCurrentMp3Info() {
+        List<Mp3Info> mp3Infos = MusicUtil.getMp3Infos(MainActivity.this);
         if (mp3Info == null) {
-            if (MusicUtil.getMp3Infos(MainActivity.this) != null) {
+            if (mp3Infos != null && (mp3Infos.size() > 0)) {
                 mp3Info = MusicUtil.getMp3Infos(MainActivity.this).get(0);
+            } else {
+                Log.e(TAG, "setCurrentMp3Info: 您还没有歌曲");
+
+                handler.sendEmptyMessage(NONE_MUSIC);
+                return;
             }
         }
         musicTitle.setTag(mp3Info.getTitle());
@@ -140,15 +163,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     /**
      * 获取播放进度时间
+     *
      * @param time 音乐时长
      * @return
      */
     private String getPlayTime(long time) {
 
         if (time >= 0) {
-            i++;
             time -= 1000 * i;
         }
         return MusicUtil.formatTime(time);
+    }
+
+    private class MySeekBarListener implements SeekBar.OnSeekBarChangeListener{
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
     }
 }
